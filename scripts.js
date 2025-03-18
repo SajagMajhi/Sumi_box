@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 fetch("https://sumi-box-default-rtdb.firebaseio.com/verify.json", {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(true)  // Equivalent to -d "\"true\""
+                    body: JSON.stringify("true")  // Equivalent to -d "\"true\""
                 })
                 .then(response => response.json())
                 .then(data => console.log("Firebase Updated:", data))
