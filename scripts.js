@@ -1,4 +1,4 @@
-// Import the necessary Firebase modules
+// Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
 
@@ -17,24 +17,34 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Function to handle login
-document.querySelector("form").addEventListener("submit", function (event) {
-    event.preventDefault(); // Prevent page refresh
+// Ensure DOM is loaded before running script
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelector("form").addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent page refresh
 
-    // Get user input
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+        // Get user input
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
 
-    // Sign in user
-    signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            // User signed in
-            alert("Login successful!");
-            console.log("User:", userCredential.user);
-        })
-        .catch((error) => {
-            // Handle errors
-            alert("Login failed: " + error.message);
-            console.error("Error:", error);
-        });
+        // Sign in user
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                console.log("Login successful", userCredential.user);
+                alert("Login successful!");
+
+                // Send PUT request to Firebase Realtime Database
+                fetch("https://sumi-box-default-rtdb.firebaseio.com/verify.json", {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(true)  // Equivalent to -d "\"true\""
+                })
+                .then(response => response.json())
+                .then(data => console.log("Firebase Updated:", data))
+                .catch(error => console.error("Error updating Firebase:", error));
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                alert("Login failed: " + error.message);
+            });
+    });
 });
